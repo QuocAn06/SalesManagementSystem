@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sales.Domain.Common;
 using Sales.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -22,29 +23,43 @@ namespace Sales.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // OrderDetail => Order
-            modelBuilder.Entity<OrderDetail>()
-                        .HasOne(od => od.Order)
-                        .WithMany(o => o.OrderDetails)
-                        .HasForeignKey(od => od.OrderId);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        }
 
-            // OrderDetail => Product
-            modelBuilder.Entity<OrderDetail>()
-                        .HasOne(od => od.Product)
-                        .WithMany(p => p.OrderDetails)
-                        .HasForeignKey(od => od.ProductId);
+        public override int SaveChanges()
+        {
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.Now;
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+            }
 
-            // Order => Customer
-            modelBuilder.Entity<Order>()
-                        .HasOne(o => o.Customer)
-                        .WithMany(c => c.Orders)
-                        .HasForeignKey(o => o.CustomerId);
+            return base.SaveChanges();
+        }
 
-            // Order => User
-            modelBuilder.Entity<Order>()
-                        .HasOne(o => o.User)
-                        .WithMany(u => u.Orders)
-                        .HasForeignKey(o => o.UserId);
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.Now;
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.Now;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
     }
 }
