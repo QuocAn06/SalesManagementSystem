@@ -1,55 +1,64 @@
-## Ignore build results
+#################################################
+# .gitignore cho dự án ASP.NET Core (.NET 6–8+)
+# Kiến trúc: Clean Architecture + EF Core + Swagger
+#################################################
+
+## Thư mục build
 bin/
 obj/
 **/bin/
 **/obj/
 
-## Ignore user-specific files
+## Visual Studio
+.vs/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-.vscode/
-.idea/
 
-## Ignore Rider files
+## Rider (JetBrains) & VSCode
+.idea/
+.vscode/
 *.sln.iml
 
-## Ignore ASP.NET temp files
-*.dbmdl
-*.dbproj.schemaview
-*.pdb
-
-## Ignore EF Core Migrations snapshots (optional)
+## EF Core
 **/Migrations/*Designer.cs
 **/Migrations/*.csproj
+**/*.dbmdl
 
-## Ignore dotnet secrets (if using)
-secrets.json
-
-## Ignore logs
+## Logs, debug, test
 *.log
 logs/
+TestResults/
+*.coverage
+*.pdb
 
-## Ignore databases
+## Database files (local)
 *.mdf
 *.ldf
-*.sqlite
 *.db
+*.sqlite
 
-## Ignore published output
+## Secrets & cấu hình cục bộ
+secrets.json
+*.env
+.env.*
+appsettings.Development.json
+
+## Docker (nếu có)
+docker-compose.override.yml
+**/obj/Docker/
+Dockerfile
+docker-compose*
+
+## Published output
 publish/
 *.publishsettings
 
-## Ignore Docker stuff
-docker-compose.override.yml
-**/obj/Docker/
-docker-compose*
+## Node/npm (nếu frontend tích hợp)
+node_modules/
+package-lock.json
 
-## Ignore environment-specific files
-.env
-.env.*
-
-## Ignore generated Swagger files (optional)
-swagger.json
-swagger.yaml
+## Khác
+*.DS_Store
+Thumbs.db
