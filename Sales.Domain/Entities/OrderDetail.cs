@@ -1,4 +1,4 @@
-﻿using Sales.Domain.Common;
+using Sales.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,6 @@ namespace Sales.Domain.Entities
 {
     public class OrderDetail: BaseEntity
     {
-        public int Id { get; set; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
         public int Quantity { get; set; }
