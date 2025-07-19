@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Sales.Application.DTOs;
 using Sales.Application.Interfaces;
@@ -59,7 +59,7 @@ namespace Sales.Infrastructure.Services
         // Update an existing product
         public async Task<ProductDto> UpdateProductAsync(int id, ProductDto productDto)
         {
-            var product = await _context.Products.FindAsync(productDto.Id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return null;
