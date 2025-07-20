@@ -19,7 +19,7 @@ namespace Sales.Application.Interfaces
         Task<ProductDto> CreateProductAsync(ProductDto productDto);
 
         // Delete a product by ID
-        Task<ProductDto> UpdateProductAsync(int id, ProductDto productDto);
+        Task<ProductDto> UpdateProductAsync(int productId, ProductDto productDto);
 
         // Delete a product by ID
         Task<bool> DeleteProductAsync(int id);
