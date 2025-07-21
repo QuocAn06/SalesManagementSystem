@@ -10,18 +10,18 @@ namespace Sales.Application.Interfaces
     public interface ICustomerService
     {
         // Get All Infomation of Customers
-        Task<List<CustomerDto>> GetAllCustomerAsync();
+        Task<List<CustomerDto>> GetAllAsync();
 
         // Get Infomatiom of Customer by ID
-        Task<CustomerDto> GetCustomerByIdAsync(int id);
+        Task<CustomerDto> GetByIdAsync(int id);
         
         // Create new Infomation of Customer
-        Task<CustomerDto> CreateNewCustomerAsync(CustomerDto customerDto);
+        Task<CustomerDto> CreateAsync(CustomerDto customerDto);
 
         // Update Infomation of Customer
-        Task<CustomerDto> UpdateCustomerAsync(int customerId, CustomerDto customerDto);
+        Task<CustomerDto> UpdateAsync(int customerId, CustomerDto customerDto);
 
         // Delete Infomation
-        Task<bool> DeleteCustomerAsync(int customerId);
+        Task<bool> DeleteAsync(int customerId);
     }
 }

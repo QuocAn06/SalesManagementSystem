@@ -24,7 +24,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Get all customers
-        public async Task<List<CustomerDto>> GetAllCustomerAsync()
+        public async Task<List<CustomerDto>> GetAllAsync()
         {
             var customers = await _context.Customers.ToListAsync();
             var customerDtos = _mapper.Map<List<CustomerDto>>(customers);
@@ -32,7 +32,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Get customer by ID
-        public async Task<CustomerDto> GetCustomerByIdAsync(int id)
+        public async Task<CustomerDto> GetByIdAsync(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
 
@@ -47,7 +47,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Create a new customer
-        public async Task<CustomerDto> CreateNewCustomerAsync(CustomerDto customerDto)
+        public async Task<CustomerDto> CreateAsync(CustomerDto customerDto)
         {
             var entity = _mapper.Map<Customer>(customerDto);
             _context.Customers.Add(entity);
@@ -57,7 +57,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Update an existing customer
-        public async Task<CustomerDto> UpdateCustomerAsync(int id, CustomerDto customerDto)
+        public async Task<CustomerDto> UpdateAsync(int id, CustomerDto customerDto)
         {
             var customer = await _context.Customers.FindAsync(id);
             if (customer == null)
@@ -73,7 +73,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Delete a product by ID
-        public async Task<bool> DeleteCustomerAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
             
