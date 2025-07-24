@@ -24,7 +24,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Get all products
-        public async Task<List<ProductDto>> GetAllProductAsync()
+        public async Task<List<ProductDto>> GetAllAsync()
         {
             var products = await _context.Products.ToListAsync();
             var productDtos = _mapper.Map<List<ProductDto>>(products);
@@ -32,7 +32,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Get product by ID
-        public async Task<ProductDto> GetProductByIdAsync(int id)
+        public async Task<ProductDto> GetByIdAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);
 
@@ -47,7 +47,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Create a new product
-        public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
+        public async Task<ProductDto> CreateAsync(ProductDto productDto)
         {
             var entity = _mapper.Map<Product>(productDto);
             _context.Products.Add(entity);
@@ -57,7 +57,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Update an existing product
-        public async Task<ProductDto> UpdateProductAsync(int id, ProductDto productDto)
+        public async Task<ProductDto> UpdateAsync(int id, ProductDto productDto)
         {
             var product = await _context.Products.FindAsync(id);
             if (product == null)
@@ -73,7 +73,7 @@ namespace Sales.Infrastructure.Services
         }
 
         // Delete a product by ID
-        public async Task<bool> DeleteProductAsync(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var product = await _context.Products.FindAsync(id);
             
