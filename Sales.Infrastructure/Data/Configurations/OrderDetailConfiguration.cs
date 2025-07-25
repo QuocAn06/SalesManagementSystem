@@ -19,7 +19,7 @@ namespace Sales.Infrastructure.Data.Configurations
             builder.Property(od => od.UnitPrice)
                 .HasColumnType("decimal(18,2)");
             
-            builder.Property(od => od.ToalPrice)
+            builder.Property(od => od.TotalPrice)
                 .HasColumnType("decimal(18,2)");
             
             builder.Property(od => od.CreatedAt)
