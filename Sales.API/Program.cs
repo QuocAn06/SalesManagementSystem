@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Sales.Application.Mappings;
 using Sales.Application.Interfaces;
 using Sales.Infrastructure.Services;
+using FluentValidation;
+using Sales.Application.Validators;
+using FluentValidation.AspNetCore;
+using Sales.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddValidatorsFromAssemblyContaining<CustomerDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 
 var app = builder.Build();
 
@@ -22,4 +29,5 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<ExceptionMiddleware>();
 app.Run();

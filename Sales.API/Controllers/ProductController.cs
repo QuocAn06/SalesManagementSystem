@@ -18,7 +18,7 @@ namespace Sales.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var products = await _service.GetAllProductAsync();
+            var products = await _service.GetAllAsync();
             return Ok(products);
         }
 
@@ -30,7 +30,7 @@ namespace Sales.API.Controllers
                 return BadRequest("Invalid product ID.");
             }
 
-            var product = await _service.GetProductByIdAsync(id);
+            var product = await _service.GetByIdAsync(id);
             
             if (product == null)
             {
@@ -43,7 +43,7 @@ namespace Sales.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProductDto dto)
         {
-            var createdProduct = await _service.CreateProductAsync(dto);
+            var createdProduct = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = createdProduct.Id }, createdProduct);
         }
 
@@ -55,7 +55,7 @@ namespace Sales.API.Controllers
                 return BadRequest("Product ID mismatch.");
             }
 
-            var updatedProduct = await _service.UpdateProductAsync(id, dto);
+            var updatedProduct = await _service.UpdateAsync(id, dto);
              
             if (updatedProduct == null)
             {
@@ -72,7 +72,7 @@ namespace Sales.API.Controllers
             {
                 return BadRequest("Invalid product ID.");
             }
-            var deleted = await _service.DeleteProductAsync(id);
+            var deleted = await _service.DeleteAsync(id);
             
             if (!deleted)
             {
