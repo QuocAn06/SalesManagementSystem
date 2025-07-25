@@ -27,7 +27,7 @@ namespace Sales.Tests.Controllers
         {
             // Arrange
             _mockService.Setup(s => s.GetAllAsync())
-                .ReturnsAsync(new List<ProductDto> { new ProductDto { Id = 1, Name = "Test" } });
+                        .ReturnsAsync(new List<ProductDto> { new ProductDto { Id = 1, Name = "Test" } });
 
             // Act
             var result = await _controller.Get();
@@ -48,7 +48,8 @@ namespace Sales.Tests.Controllers
         [Fact]
         public async Task Get_WithNonExistingProduct_ReturnsNotFound()
         {
-            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((ProductDto)null);
+            _mockService.Setup(s => s.GetByIdAsync(99))
+                                     .ReturnsAsync((ProductDto)null);
             var result = await _controller.Get(99);
             Assert.IsType<NotFoundResult>(result);
         }
@@ -57,7 +58,8 @@ namespace Sales.Tests.Controllers
         public async Task Post_ReturnsCreatedProduct()
         {
             var dto = new ProductDto { Name = "New", StockQuantity = 5 };
-            _mockService.Setup(s => s.CreateAsync(dto)).ReturnsAsync(new ProductDto { Id = 1, Name = "New" });
+            _mockService.Setup(s => s.CreateAsync(dto))
+                                     .ReturnsAsync(new ProductDto { Id = 1, Name = "New" });
 
             var result = await _controller.Post(dto);
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
