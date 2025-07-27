@@ -3,6 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Sales.Application.Mappings;
 using Sales.Application.Interfaces;
 using Sales.Infrastructure.Services;
+using FluentValidation;
+using Sales.Application.Validators;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +19,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(CustomerProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(OrderProfile).Assembly);
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddValidatorsFromAssemblyContaining<CustomerDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 var app = builder.Build();
 
@@ -22,4 +53,6 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.UseMiddleware<ExceptionMiddleware>(); 
+app.UseAuthorization();
 app.Run();

@@ -10,18 +10,18 @@ namespace Sales.Application.Interfaces
     public interface IProductService
     {
         // Get all products
-        Task<List<ProductDto>> GetAllProductAsync();
+        Task<List<ProductDto>> GetAllAsync();
         
         // Get product by ID
-        Task<ProductDto> GetProductByIdAsync(int id);
+        Task<ProductDto> GetByIdAsync(int id);
 
         // Create a new product
-        Task<ProductDto> CreateProductAsync(ProductDto productDto);
+        Task<ProductDto> CreateAsync(ProductDto productDto);
 
         // Delete a product by ID
-        Task<ProductDto> UpdateProductAsync(int id, ProductDto productDto);
+        Task<ProductDto> UpdateAsync(int productId, ProductDto productDto);
 
         // Delete a product by ID
-        Task<bool> DeleteProductAsync(int id);
+        Task<bool> DeleteAsync(int id);
     }
 }
