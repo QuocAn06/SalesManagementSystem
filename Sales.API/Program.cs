@@ -6,7 +6,6 @@ using Sales.Infrastructure.Services;
 using FluentValidation;
 using Sales.Application.Validators;
 using FluentValidation.AspNetCore;
-using Sales.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +21,7 @@ builder.Services.AddAutoMapper(typeof(OrderProfile).Assembly);
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddValidatorsFromAssemblyContaining<CustomerDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<OrderDtoValidator>();

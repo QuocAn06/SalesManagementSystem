@@ -1,40 +1,46 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
-namespace Sales.API.Middleware
+public class ExceptionMiddleware
 {
-    public class ExceptionMiddleware
+    private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
+
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
-        private readonly RequestDelegate _next;
-        private readonly ILogger<ExceptionMiddleware> _logger;
+        _next = next;
+        _logger = logger;
+    }
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    public async Task Invoke(HttpContext context)
+    {
+        try
         {
-            _next = next;
-            _logger = logger;
+            await _next(context);
         }
-
-        public async Task Invoke(HttpContext context)
+        catch (ValidationException ex)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-
-                context.Response.ContentType = "application/json";
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-
-                var result = JsonSerializer.Serialize(new
-                {
-                    StatusCode = context.Response.StatusCode,
-                    Message = "Internal Sever Error." + ex.Message
-                });
-
-                await context.Response.WriteAsync(result);
-            }
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            await WriteErrorResponse(context, ex.Message);
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unhandled Exception");
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await WriteErrorResponse(context, "Internal Server Error");
+        }
+    }
+
+    private Task WriteErrorResponse(HttpContext context, string message)
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonConvert.SerializeObject(new
+        {
+            error = message,
+            path = context.Request.Path,
+            timestamp = DateTime.UtcNow
+        });
+        return context.Response.WriteAsync(result);
     }
 }
