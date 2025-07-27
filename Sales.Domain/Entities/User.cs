@@ -1,4 +1,5 @@
 using Sales.Domain.Common;
+using Sales.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Sales.Domain.Entities
     {
         public string Username { get; set; }
         public string PasswordHash { get; set; }
-        public string Role { get; set; }
+        public UserRole Role { get; set; } // "Admin", "Staff", "Manager"
         public ICollection<Order> Orders { get; set; }
     }
 }

@@ -24,11 +24,11 @@ namespace Sales.Infrastructure.Migrations
 
             modelBuilder.Entity("Sales.Domain.Entities.Customer", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -58,18 +58,18 @@ namespace Sales.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Sales.Domain.Entities.Order", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -84,6 +84,9 @@ namespace Sales.Infrastructure.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -93,7 +96,7 @@ namespace Sales.Infrastructure.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
@@ -104,11 +107,11 @@ namespace Sales.Infrastructure.Migrations
 
             modelBuilder.Entity("Sales.Domain.Entities.OrderDetail", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -133,7 +136,7 @@ namespace Sales.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
@@ -144,11 +147,11 @@ namespace Sales.Infrastructure.Migrations
 
             modelBuilder.Entity("Sales.Domain.Entities.Product", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -174,18 +177,18 @@ namespace Sales.Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Sales.Domain.Entities.User", b =>
                 {
-                    b.Property<int>("id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
@@ -196,10 +199,9 @@ namespace Sales.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
+                    b.Property<int>("Role")
                         .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -209,7 +211,7 @@ namespace Sales.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.HasKey("id");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
