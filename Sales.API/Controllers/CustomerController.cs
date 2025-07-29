@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sales.Application.DTOs;
 using Sales.Application.Interfaces;
 
 namespace Sales.API.Controllers
 {
+    [Authorize(Roles = "Admin,Manager,Staff")]
     [ApiController]
     [Route("api/[controller]")]
     public class CustomerController: ControllerBase
@@ -15,14 +17,14 @@ namespace Sales.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllCustomers()
         {
             var customers = await _service.GetAllAsync();
             return Ok(customers);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetCustomerById(int id)
         {
             if (id <= 0)
             {
@@ -40,14 +42,14 @@ namespace Sales.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CustomerDto dto)
+        public async Task<IActionResult> CreateNewCustomer([FromBody] CustomerDto dto)
         {
             var newCustomer = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = newCustomer.Id }, newCustomer);
+            return CreatedAtAction(nameof(GetCustomerById), new { id = newCustomer.Id }, newCustomer);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] CustomerDto dto)
+        public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerDto dto)
         {
             if (id != dto.Id)
             {
@@ -65,7 +67,7 @@ namespace Sales.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteCustomer(int id)
         {
             if (id <= 0)
             {

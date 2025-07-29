@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sales.Application.DTOs;
 using Sales.Application.Interfaces;
 using Sales.Infrastructure.Services;
 
 namespace Sales.API.Controllers
 {
+    [Authorize(Roles = "Admin,Staff")]
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
@@ -17,14 +19,14 @@ namespace Sales.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllOrders()
         {
             var orders = await _service.GetAllAsync();
             return Ok(orders);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetOrderById(int id)
         {
             if (id <= 0)
                 return BadRequest("Invalid order ID.");
@@ -38,18 +40,18 @@ namespace Sales.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] OrderDto orderDto)
+        public async Task<IActionResult> CreateNewOrder([FromBody] OrderDto orderDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var created = await _service.CreateAsync(orderDto);
-            return CreatedAtAction(nameof(Get), new { id = created.Id }, created);
+            return CreatedAtAction(nameof(GetOrderById), new { id = created.Id }, created);
         }
 
         // PUT: api/order/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] OrderDto orderDto)
+        public async Task<IActionResult> UpdateOrder(int id, [FromBody] OrderDto orderDto)
         {
             if (id != orderDto.Id)
                 return BadRequest("Order ID mismatch.");
@@ -67,7 +69,7 @@ namespace Sales.API.Controllers
 
         // DELETE: api/order/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteOrder(int id)
         {
             var deleted = await _service.DeleteAsync(id);
 

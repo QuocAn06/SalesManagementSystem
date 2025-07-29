@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sales.Application.DTOs;
 using Sales.Application.Interfaces;
 
@@ -15,6 +16,7 @@ namespace Sales.API.Controllers
             _userService = userService;
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
@@ -22,6 +24,7 @@ namespace Sales.API.Controllers
             return Ok(user); // hoặc CreatedAt nếu cần
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
@@ -30,7 +33,7 @@ namespace Sales.API.Controllers
         }
 
         [HttpGet("users")]
-        // [Authorize(Roles = "Admin")] // sẽ bật khi làm phân quyền
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _userService.GetAllAsync();

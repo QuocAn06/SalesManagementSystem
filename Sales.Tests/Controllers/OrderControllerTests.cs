@@ -33,7 +33,7 @@ namespace Sales.Tests.Controllers
                                                                               Quantity = 2,
                                                                               UnitPrice = 34000}]}});
 
-            var result = await _controller.Get();
+            var result = await _controller.GetAllOrders();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var orders = Assert.IsAssignableFrom<List<OrderDto>>(okResult.Value);
@@ -43,7 +43,7 @@ namespace Sales.Tests.Controllers
         [Fact]
         public async Task Get_WithInvalidId_ReturnsBadRequest()
         {
-            var result = await _controller.Get(0);
+            var result = await _controller.GetOrderById(0);
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
@@ -51,7 +51,7 @@ namespace Sales.Tests.Controllers
         public async Task Get_WithNonExistingOrder_ReturnsNotFound()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((OrderDto)null);
-            var result = await _controller.Get(99);
+            var result = await _controller.GetOrderById(99);
             Assert.IsType<NotFoundResult>(result);
         }
 
@@ -74,7 +74,7 @@ namespace Sales.Tests.Controllers
                                                                            Quantity = 2,
                                                                            UnitPrice = 34000}]});
 
-            var result = await _controller.Post(dto);
+            var result = await _controller.CreateNewOrder(dto);
             var created = Assert.IsType<CreatedAtActionResult>(result);
             var order = Assert.IsType<OrderDto>(created.Value);
             Assert.Equal(1, order.Id);
@@ -87,7 +87,7 @@ namespace Sales.Tests.Controllers
                                                                          { ProductId = 1,
                                                                            Quantity = 2,
                                                                            UnitPrice = 34000}]};
-            var result = await _controller.Put(1, dto);
+            var result = await _controller.UpdateOrder(1, dto);
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
@@ -98,7 +98,7 @@ namespace Sales.Tests.Controllers
             _mockService.Setup(s => s.UpdateAsync(1, dto))
                         .ReturnsAsync(dto);
 
-            var result = await _controller.Put(1, dto);
+            var result = await _controller.UpdateOrder(1, dto);
             var ok = Assert.IsType<OkObjectResult>(result);
             var updated = Assert.IsType<OrderDto>(ok.Value);
             Assert.Equal(1, updated.Id);
@@ -108,7 +108,7 @@ namespace Sales.Tests.Controllers
         public async Task Delete_WithNonExistingOrder_ReturnsNotFound()
         {
             _mockService.Setup(s => s.DeleteAsync(99)).ReturnsAsync(false);
-            var result = await _controller.Delete(99);
+            var result = await _controller.DeleteOrder(99);
             Assert.IsType<NotFoundResult>(result);
         }
 
@@ -116,7 +116,7 @@ namespace Sales.Tests.Controllers
         public async Task Delete_WithExistingOrder_ReturnsNoContent()
         {
             _mockService.Setup(s => s.DeleteAsync(1)).ReturnsAsync(true);
-            var result = await _controller.Delete(1);
+            var result = await _controller.DeleteOrder(1);
             Assert.IsType<NoContentResult>(result);
         }
     }
