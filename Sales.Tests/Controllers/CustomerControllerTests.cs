@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace Sales.Tests.Controllers
 {
@@ -23,12 +24,12 @@ namespace Sales.Tests.Controllers
         }
 
         [Fact]
-        public async Task Get_ReturnsListOfCustomers()
+        public async Task GetReturnsListOfCustomers()
         {
             _mockService.Setup(s => s.GetAllAsync())
                         .ReturnsAsync(new List<CustomerDto> { new CustomerDto { Id = 1, Name = "An Le" } });
 
-            var result = await _controller.Get();
+            var result = await _controller.GetAllCustomers();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             var customers = Assert.IsAssignableFrom<List<CustomerDto>>(okResult.Value);
@@ -38,16 +39,16 @@ namespace Sales.Tests.Controllers
         [Fact]
         public async Task Get_WithInvalidId_ReturnBadRequest()
         {
-            var result = await _controller.Get(0);
+            var result = await _controller.GetCustomerById(0);
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
         public async Task Get_WithNonExistingCustomer_ReturnsNotFound()
         {
-            _mockService.Setup(s => s.GetByIdAsync(99))
+           _mockService.Setup(static s => s.GetByIdAsync(99))
                         .ReturnsAsync((CustomerDto)null);
-            var result = await _controller.Get(99);
+            var result = await _controller.GetCustomerById(99);
             Assert.IsType<NotFoundResult>(result);
         }
 
@@ -58,7 +59,7 @@ namespace Sales.Tests.Controllers
             _mockService.Setup(s => s.CreateAsync(dto))
                         .ReturnsAsync(new CustomerDto { Id = 10, Name = "Minh Truong" });
             
-            var result = await _controller.Post(dto);
+            var result = await _controller.CreateNewCustomer(dto);
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             var customer = Assert.IsType<CustomerDto>(createdResult.Value);
             Assert.Equal("Minh Truong", customer.Name);

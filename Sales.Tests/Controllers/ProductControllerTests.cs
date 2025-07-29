@@ -30,7 +30,7 @@ namespace Sales.Tests.Controllers
                         .ReturnsAsync(new List<ProductDto> { new ProductDto { Id = 1, Name = "Test" } });
 
             // Act
-            var result = await _controller.Get();
+            var result = await _controller.GetAllProducts();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -41,7 +41,7 @@ namespace Sales.Tests.Controllers
         [Fact]
         public async Task Get_WithInvalidId_ReturnsBadRequest()
         {
-            var result = await _controller.Get(0);
+            var result = await _controller.GetProductById(0);
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
@@ -50,7 +50,7 @@ namespace Sales.Tests.Controllers
         {
             _mockService.Setup(s => s.GetByIdAsync(99))
                                      .ReturnsAsync((ProductDto)null);
-            var result = await _controller.Get(99);
+            var result = await _controller.GetProductById(99);
             Assert.IsType<NotFoundResult>(result);
         }
 
@@ -61,7 +61,7 @@ namespace Sales.Tests.Controllers
             _mockService.Setup(s => s.CreateAsync(dto))
                                      .ReturnsAsync(new ProductDto { Id = 1, Name = "New" });
 
-            var result = await _controller.Post(dto);
+            var result = await _controller.CreateNewProduct(dto);
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             var product = Assert.IsType<ProductDto>(createdResult.Value);
             Assert.Equal("New", product.Name);
