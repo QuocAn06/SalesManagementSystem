@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -13,22 +13,56 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration
-       .SetBasePath(Directory.GetCurrentDirectory())
-       .AddJsonFile("appsettings.json")
-       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true);
+// Load cấu hình đúng cho môi trường Docker/Production
+builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddJsonFile("appsettings.Docker.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-builder.Services.AddControllers();
+// Services
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<CustomerDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<OrderDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+// JWT Authentication
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
 
-    // Enable JWT Auth
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -44,50 +78,37 @@ builder.Services.AddSwaggerGen(c =>
             {
                 Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
-            new string[] {}
+            new string[] { }
         }
     });
 });
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IStatisticsService, StatisticsService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddValidatorsFromAssemblyContaining<CustomerDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<ProductDtoValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<OrderDtoValidator>();
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-                    };
-                });
+
+// Controller
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
+// Middleware
 app.UseSwagger();
 app.UseSwaggerUI();
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapControllers();
-app.UseMiddleware<ExceptionMiddleware>(); 
 
-using (var scope = app.Services.CreateScope())
+//// Seed Data sau khi đảm bảo đã chạy migration
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+//    var dbContext = services.GetRequiredService<ApplicationDbContext>();
+//    dbContext.Database.Migrate(); // ensure DB is created and up to date
+//    SeedData.Initialize(services);
+//}
+
+// Hủy HTTPS nếu chạy Docker (tuỳ cấu hình, hoặc dùng biến môi trường)
+if (!app.Environment.IsDevelopment())
 {
-    var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
+    app.UseHttpsRedirection(); // có thể bỏ nếu chạy hoàn toàn bằng HTTP trong Docker
 }
 
 app.Run();
