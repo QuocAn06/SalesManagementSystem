@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sales.Application.Interfaces;
 using Sales.Infrastructure.Services;
 
 namespace Sales.API.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     [ApiController]
     [Route("api/[controller]")]
     public class StatisticsController : ControllerBase

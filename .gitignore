@@ -1,6 +1,6 @@
 #################################################
-# .gitignore cho dự án ASP.NET Core (.NET 6–8+)
-# Kiến trúc: Clean Architecture + EF Core + Swagger
+# .gitignore cho ASP.NET Core (.NET 6–8+)
+# Kiến trúc: Clean Architecture + EF Core + Swagger + Docker
 #################################################
 
 ## Thư mục build
@@ -45,20 +45,12 @@ secrets.json
 .env.*
 appsettings.Development.json
 
-## Docker (nếu có)
+## Docker (nên giữ lại các file cấu hình chính)
 docker-compose.override.yml
 **/obj/Docker/
-Dockerfile
-docker-compose*
 
-## Published output
-publish/
-*.publishsettings
-
-## Node/npm (nếu frontend tích hợp)
-node_modules/
-package-lock.json
-
-## Khác
-*.DS_Store
-Thumbs.db
+# CHO PHÉP các file quan trọng
+!Dockerfile
+!docker-compose.yml
+!.dockerignore
+!appsettings.Docker.

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Sales.Application.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Sales.Application.DTOs;
+using Sales.Application.Interfaces;
 
 namespace Sales.API.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductController: ControllerBase
@@ -16,14 +18,14 @@ namespace Sales.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAllProducts()
         {
             var products = await _service.GetAllAsync();
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
             if (id <= 0)
             {
@@ -41,14 +43,15 @@ namespace Sales.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ProductDto dto)
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateNewProduct([FromBody] ProductDto dto)
         {
             var createdProduct = await _service.CreateAsync(dto);
-            return CreatedAtAction(nameof(Get), new { id = createdProduct.Id }, createdProduct);
+            return CreatedAtAction(nameof(GetProductById), new { id = createdProduct.Id }, createdProduct);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] ProductDto dto)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductDto dto)
         {
             if (id != dto.Id)
             {
@@ -66,7 +69,7 @@ namespace Sales.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
             if (id <= 0)
             {

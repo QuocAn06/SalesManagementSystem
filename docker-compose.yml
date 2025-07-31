@@ -1,0 +1,36 @@
+﻿version: '3.9'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sales-db
+    environment:
+      SA_PASSWORD: "A!sD3fG7x@ZqL"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - salesnetwork
+
+  api:
+    build:  
+      context: .
+      dockerfile: Dockerfile
+    container_name: sales-api
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=SaleDb;User Id=sa;Password=A!sD3fG7x@ZqL;Encrypt=true;TrustServerCertificate=true;
+    depends_on:
+      - sqlserver
+    networks:
+      - salesnetwork
+
+volumes:
+  mssql_data:
+
+networks:
+  salesnetwork:
+    driver: bridge
